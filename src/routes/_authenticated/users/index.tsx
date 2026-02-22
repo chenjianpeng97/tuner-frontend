@@ -8,21 +8,14 @@ const usersSearchSchema = z.object({
   pageSize: z.number().optional().catch(10),
   // Facet filters
   status: z
-    .array(
-      z.union([
-        z.literal('active'),
-        z.literal('inactive'),
-        z.literal('invited'),
-        z.literal('suspended'),
-      ])
-    )
+    .array(z.union([z.literal('active'), z.literal('inactive')]))
     .optional()
     .catch([]),
   role: z
     .array(z.enum(roles.map((r) => r.value as (typeof roles)[number]['value'])))
     .optional()
     .catch([]),
-  // Per-column text filter (example for username)
+  // Per-column text filter
   username: z.string().optional().catch(''),
 })
 

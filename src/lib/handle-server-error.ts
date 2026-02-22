@@ -7,17 +7,16 @@ export function handleServerError(error: unknown) {
 
   let errMsg = 'Something went wrong!'
 
-  if (
-    error &&
-    typeof error === 'object' &&
-    'status' in error &&
-    Number(error.status) === 204
-  ) {
-    errMsg = 'Content not found.'
-  }
-
   if (error instanceof AxiosError) {
-    errMsg = error.response?.data.title
+    // Backend returns { error: "..." } via SimpleErrorResponseModel
+    const data = error.response?.data
+    if (data?.error) {
+      errMsg = data.error
+    } else if (data?.title) {
+      errMsg = data.title
+    } else if (error.message) {
+      errMsg = error.message
+    }
   }
 
   toast.error(errMsg)

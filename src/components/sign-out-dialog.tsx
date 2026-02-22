@@ -1,4 +1,6 @@
 import { useNavigate, useLocation } from '@tanstack/react-router'
+import { logOut } from '@/api/endpoints/account'
+import { removeCookie } from '@/lib/cookies'
 import { useAuthStore } from '@/stores/auth-store'
 import { ConfirmDialog } from '@/components/confirm-dialog'
 
@@ -12,9 +14,15 @@ export function SignOutDialog({ open, onOpenChange }: SignOutDialogProps) {
   const location = useLocation()
   const { auth } = useAuthStore()
 
-  const handleSignOut = () => {
+  const handleSignOut = async () => {
+    try {
+      await logOut()
+    } catch {
+      // Even if server call fails, clear local state
+    }
+    // In mock mode, MSW can't clear cookies via Set-Cookie, so do it manually
+    removeCookie('access_token')
     auth.reset()
-    // Preserve current location for redirect after sign-in
     const currentPath = location.href
     navigate({
       to: '/sign-in',

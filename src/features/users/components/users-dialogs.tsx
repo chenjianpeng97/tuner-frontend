@@ -1,6 +1,5 @@
 import { UsersActionDialog } from './users-action-dialog'
-import { UsersDeleteDialog } from './users-delete-dialog'
-import { UsersInviteDialog } from './users-invite-dialog'
+import { UsersSetPasswordDialog } from './users-set-password-dialog'
 import { useUsers } from './users-provider'
 
 export function UsersDialogs() {
@@ -13,16 +12,10 @@ export function UsersDialogs() {
         onOpenChange={() => setOpen('add')}
       />
 
-      <UsersInviteDialog
-        key='user-invite'
-        open={open === 'invite'}
-        onOpenChange={() => setOpen('invite')}
-      />
-
       {currentRow && (
         <>
           <UsersActionDialog
-            key={`user-edit-${currentRow.id}`}
+            key={`user-edit-${currentRow.id_}`}
             open={open === 'edit'}
             onOpenChange={() => {
               setOpen('edit')
@@ -33,11 +26,11 @@ export function UsersDialogs() {
             currentRow={currentRow}
           />
 
-          <UsersDeleteDialog
-            key={`user-delete-${currentRow.id}`}
-            open={open === 'delete'}
+          <UsersSetPasswordDialog
+            key={`user-set-pwd-${currentRow.id_}`}
+            open={open === 'set-password'}
             onOpenChange={() => {
-              setOpen('delete')
+              setOpen('set-password')
               setTimeout(() => {
                 setCurrentRow(null)
               }, 500)

@@ -1,6 +1,7 @@
 import { DotsHorizontalIcon } from '@radix-ui/react-icons'
 import { type Row } from '@tanstack/react-table'
-import { Trash2, UserPen } from 'lucide-react'
+import { KeyRound, UserCheck, UserPen, UserX } from 'lucide-react'
+import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
@@ -10,6 +11,8 @@ import {
   DropdownMenuShortcut,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+import { useActivateUser } from '../api/use-activate-user'
+import { useDeactivateUser } from '../api/use-deactivate-user'
 import { type User } from '../data/schema'
 import { useUsers } from './users-provider'
 
@@ -19,6 +22,10 @@ type DataTableRowActionsProps = {
 
 export function DataTableRowActions({ row }: DataTableRowActionsProps) {
   const { setOpen, setCurrentRow } = useUsers()
+  const activateUser = useActivateUser()
+  const deactivateUser = useDeactivateUser()
+  const user = row.original
+
   return (
     <>
       <DropdownMenu modal={false}>
@@ -31,10 +38,10 @@ export function DataTableRowActions({ row }: DataTableRowActionsProps) {
             <span className='sr-only'>Open menu</span>
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align='end' className='w-[160px]'>
+        <DropdownMenuContent align='end' className='w-[180px]'>
           <DropdownMenuItem
             onClick={() => {
-              setCurrentRow(row.original)
+              setCurrentRow(user)
               setOpen('edit')
             }}
           >
@@ -43,19 +50,47 @@ export function DataTableRowActions({ row }: DataTableRowActionsProps) {
               <UserPen size={16} />
             </DropdownMenuShortcut>
           </DropdownMenuItem>
-          <DropdownMenuSeparator />
           <DropdownMenuItem
             onClick={() => {
-              setCurrentRow(row.original)
-              setOpen('delete')
+              setCurrentRow(user)
+              setOpen('set-password')
             }}
-            className='text-red-500!'
           >
-            Delete
+            Set Password
             <DropdownMenuShortcut>
-              <Trash2 size={16} />
+              <KeyRound size={16} />
             </DropdownMenuShortcut>
           </DropdownMenuItem>
+          <DropdownMenuSeparator />
+          {user.is_active ? (
+            <DropdownMenuItem
+              onClick={() => {
+                deactivateUser.mutate(user.id_, {
+                  onError: (err) => toast.error(err.message),
+                })
+              }}
+              className='text-orange-600!'
+            >
+              Deactivate
+              <DropdownMenuShortcut>
+                <UserX size={16} />
+              </DropdownMenuShortcut>
+            </DropdownMenuItem>
+          ) : (
+            <DropdownMenuItem
+              onClick={() => {
+                activateUser.mutate(user.id_, {
+                  onError: (err) => toast.error(err.message),
+                })
+              }}
+              className='text-green-600!'
+            >
+              Activate
+              <DropdownMenuShortcut>
+                <UserCheck size={16} />
+              </DropdownMenuShortcut>
+            </DropdownMenuItem>
+          )}
         </DropdownMenuContent>
       </DropdownMenu>
     </>
