@@ -4,7 +4,8 @@
   "version": "2.2.1",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "vite --mode api",
+    "mock": "vite --mode mock",
     "dev:mock": "vite --mode mock",
     "dev:api": "vite --mode api",
     "build": "tsc -b && vite build",
